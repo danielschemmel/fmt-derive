@@ -20,7 +20,7 @@ checksum = "56254986775e3233ffa9c4d7d3faaf6d36a2c09d30b20687e9f88bc8bafc16c8"
 
 [[package]]
 name = "fmt-derive"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "fmt-derive-proc",
  "pretty_assertions",
@@ -28,7 +28,7 @@ dependencies = [
 
 [[package]]
 name = "fmt-derive-proc"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "pretty_assertions",
  "proc-macro-crate",
