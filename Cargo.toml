@@ -1,0 +1,6 @@
+[workspace]
+resolver = "2"
+members = [
+	"fmt-derive",
+	"fmt-derive-proc",
+]
