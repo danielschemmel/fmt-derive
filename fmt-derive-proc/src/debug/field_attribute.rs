@@ -2,19 +2,10 @@ use quote::quote;
 use syn::parse::{Parse, ParseStream};
 use syn::{parenthesized, Ident};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct FieldAttribute {
 	pub ignore: bool,
 	pub format: Option<proc_macro2::TokenStream>,
-}
-
-impl Default for FieldAttribute {
-	fn default() -> Self {
-		Self {
-			ignore: false,
-			format: None,
-		}
-	}
 }
 
 impl FieldAttribute {
@@ -46,10 +37,10 @@ impl Parse for FieldAttribute {
 						if id == "ignore" {
 							result.ignore = true;
 							if !args.is_empty() {
-								return Err(syn::Error::new_spanned(quote!(args), format!("Unexpected tokens")));
+								return Err(syn::Error::new_spanned(quote!(args), "Unexpected tokens"));
 							}
 						} else {
-							return Err(syn::Error::new_spanned(id, format!("Expected: ignore")));
+							return Err(syn::Error::new_spanned(id, "Expected: ignore"));
 						}
 					} else if lookahead.peek(syn::LitStr) {
 						result.format = Some(args.parse()?);

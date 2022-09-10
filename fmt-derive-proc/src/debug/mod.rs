@@ -53,11 +53,11 @@ pub fn debug(item: proc_macro::TokenStream, lib: &proc_macro2::TokenStream) -> p
 				match item_struct.fields {
 					syn::Fields::Unit => process_unit(&item_name_str),
 					syn::Fields::Unnamed(fields) => {
-						let (destructure, implementation) = process_tuple(&item_name_str, &fields, &lib);
+						let (destructure, implementation) = process_tuple(&item_name_str, &fields, lib);
 						quote!(let #item_name #destructure = self; #implementation)
 					}
 					syn::Fields::Named(fields) => {
-						let (destructure, implementation) = process_struct(&item_name_str, &fields, &lib);
+						let (destructure, implementation) = process_struct(&item_name_str, &fields, lib);
 						quote!(let #item_name #destructure = self; #implementation)
 					}
 				}
@@ -104,11 +104,11 @@ pub fn debug(item: proc_macro::TokenStream, lib: &proc_macro2::TokenStream) -> p
 									stream.extend(quote!(Self::#variant_name => { #implementation }));
 								}
 								syn::Fields::Unnamed(fields) => {
-									let (destructure, implementation) = process_tuple(&variant_name_str, &fields, &lib);
+									let (destructure, implementation) = process_tuple(&variant_name_str, &fields, lib);
 									stream.extend(quote!(Self::#variant_name #destructure => { #implementation }));
 								}
 								syn::Fields::Named(fields) => {
-									let (destructure, implementation) = process_struct(&variant_name_str, &fields, &lib);
+									let (destructure, implementation) = process_struct(&variant_name_str, &fields, lib);
 									stream.extend(quote!(Self::#variant_name #destructure => { #implementation }));
 								}
 							}

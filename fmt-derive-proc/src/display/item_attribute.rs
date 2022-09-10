@@ -1,15 +1,9 @@
 use syn::parenthesized;
 use syn::parse::{Parse, ParseStream};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct ItemAttribute {
 	pub format: Option<proc_macro2::TokenStream>,
-}
-
-impl Default for ItemAttribute {
-	fn default() -> Self {
-		Self { format: None }
-	}
 }
 
 impl ItemAttribute {
