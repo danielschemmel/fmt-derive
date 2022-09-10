@@ -1,9 +1,12 @@
 [package]
 name = "fmt-derive"
 version = "0.0.0"
+readme = "README.md"
 authors = ["Daniel Schemmel <daniel@schemmel.net>"]
 edition = "2021"
-readme = "README.md"
+publish = ["crates-io"]
+repository = "https://github.com/danielschemmel/fmt-derive"
+license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
