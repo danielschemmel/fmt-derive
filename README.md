@@ -144,3 +144,6 @@ fn main() {
 	assert_eq!(format!("{:?}", Function(main)), "Function");
 }
 ```
+
+# TODO
+- The format expressions on enumeration variants and fields show that this crate will probably need a better method of referring to fields (currently, `self` is accessible, which requires unwrapping the variant each time it is used)
