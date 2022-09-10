@@ -37,11 +37,11 @@ use fmt_derive::Debug;
 use core::fmt::Debug;
 ```
 
-The problem does not exist for `Display`:
-```rust
+The same problem exists for `Display`:
+```rust,compile_fail
 # use fmt_derive::_rt; // required for doc-tests in this crate only
 # fn main() {}
-// This works just fine, as there is no `derive(core::fmt::Display)`
+// error[E0252]: the name `Display` is defined multiple times
 use fmt_derive::Display;
 use core::fmt::Display;
 ```
@@ -74,7 +74,7 @@ A custom representation can be quickly derived using a format expression for the
 untagged unions. This is the expected case when deriving `Display` or when 
 ```rust
 # use fmt_derive::_rt; // required for doc-tests in this crate only
-use fmt_derive::Debug; // replace `use std::fmt::Debug;` and `use core::fmt::Debug;`
+use fmt_derive::{Debug, Display};
 
 #[derive(Display, Debug)]
 #[debug("T<0x{:X}>", self.0)]
@@ -94,7 +94,7 @@ fn main() {
 For enumerations, variants can also be customized:
 ```rust
 # use fmt_derive::_rt; // required for doc-tests in this crate only
-use fmt_derive::Debug; // replace `use std::fmt::Debug;` and `use core::fmt::Debug;`
+use fmt_derive::Debug;
 
 #[derive(Debug)]
 enum Thing{
@@ -114,7 +114,7 @@ fn main() {
 Or by customizing an individual field:
 ```rust
 # use fmt_derive::_rt; // required for doc-tests in this crate only
-use fmt_derive::Debug; // replace `use std::fmt::Debug;` and `use core::fmt::Debug;`
+use fmt_derive::Debug;
 
 #[derive(Debug)]
 struct Thing(#[debug("0x{:X}", self.0)] u32);
@@ -132,7 +132,7 @@ Although it is possible to derive a debug message for any field, it is sometimes
 all:
 ```rust
 # use fmt_derive::_rt; // required for doc-tests in this crate only
-use fmt_derive::Debug; // replace `use std::fmt::Debug;` and `use core::fmt::Debug;`
+use fmt_derive::Debug;
 
 #[derive(Debug)]
 struct Function(#[debug(ignore)] fn());
