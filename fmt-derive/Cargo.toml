@@ -15,7 +15,3 @@ fmt-derive-proc = { version = "=0.0.1", path = "../fmt-derive-proc" }
 
 [dev-dependencies]
 pretty_assertions = "1.3.0"
-
-[features]
-default = ["std"]
-std = []

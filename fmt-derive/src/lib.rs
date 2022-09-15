@@ -1,5 +1,5 @@
 #![doc = include_str!("../README.md")]
-#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(test), no_std)]
 
 /// Derive implementations of `Debug` for arbitrary `struct`s and `enum`s (`union`s are supported only with a
 /// top-level format directive). `use`ing [`fmt_derive::Debug`](crate::Debug), will also pull in the
