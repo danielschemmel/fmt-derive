@@ -150,5 +150,8 @@ This crate is `no_std` without any action required.
 
 Running the tests will enable `std` to make writing tests easier. Again, no action is required.
 
+# MSRV
+The current MSRV is 1.56.1.
+
 # TODO
 - The format expressions on enumeration variants and fields show that this crate will probably need a better method of referring to fields (currently, `self` is accessible, which requires unwrapping the variant each time it is used)
