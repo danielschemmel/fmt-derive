@@ -4,11 +4,11 @@ version = "0.0.1"
 description = "A more robust and versatile derive macro for Debug and Display."
 readme = "README.md"
 authors = ["Daniel Schemmel <daniel@schemmel.net>"]
-edition = "2021"
 repository = "https://github.com/danielschemmel/fmt-derive"
 license = "MIT OR Apache-2.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition = "2021"
+rust-version = "1.56.1"
 
 [dependencies]
 fmt-derive-proc = { version = "=0.0.1", path = "../fmt-derive-proc" }
