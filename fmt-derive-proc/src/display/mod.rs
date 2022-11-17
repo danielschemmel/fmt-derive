@@ -34,7 +34,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 
 	let mut item_config = item_attribute::ItemAttribute::default();
 	for attribute in &item.attrs {
-		if attribute.path.is_ident("display") {
+		if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
 			match syn::parse2(attribute.tokens.clone()) {
 				Ok(value) => item_config.update(value),
 				Err(err) => emit_error!(err),
@@ -76,7 +76,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 						let variant_name = variant.ident;
 						let mut variant_config = variant_attribute::VariantAttribute::default();
 						for attribute in &variant.attrs {
-							if attribute.path.is_ident("display") {
+							if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
 								match syn::parse2(attribute.tokens.clone()) {
 									Ok(value) => variant_config.update(value),
 									Err(err) => emit_error!(err),
@@ -140,17 +140,14 @@ fn process_unit(name: &str) -> proc_macro2::TokenStream {
 	quote!(f.debug_struct(#name).finish())
 }
 
-fn process_tuple(
-	name: &str,
-	fields: &syn::FieldsUnnamed,
-) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
+fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
 	let mut chain = quote!(use _rt::Replacement; let mut w = f.debug_tuple(#name););
 
 	for (field_number, field) in fields.unnamed.iter().enumerate() {
 		let mut config = field_attribute::FieldAttribute::default();
 		for attribute in &field.attrs {
-			if attribute.path.is_ident("display") {
+			if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
 				match syn::parse2(attribute.tokens.clone()) {
 					Ok(value) => config.update(value),
 					Err(err) => emit_error!(err),
@@ -177,17 +174,14 @@ fn process_tuple(
 	(quote!((#destructure)), quote!(#chain w.finish()))
 }
 
-fn process_struct(
-	name: &str,
-	fields: &syn::FieldsNamed,
-) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
+fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
 	let mut chain = quote!(use _rt::Replacement; let mut w = f.debug_struct(#name););
 
 	for field in &fields.named {
 		let mut config = field_attribute::FieldAttribute::default();
 		for attribute in &field.attrs {
-			if attribute.path.is_ident("display") {
+			if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
 				match syn::parse2(attribute.tokens.clone()) {
 					Ok(value) => config.update(value),
 					Err(err) => emit_error!(err),

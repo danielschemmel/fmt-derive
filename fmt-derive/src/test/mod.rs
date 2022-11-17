@@ -5,3 +5,5 @@ mod basic_struct;
 mod basic_union;
 mod generics;
 mod ignored_field;
+
+mod readme;

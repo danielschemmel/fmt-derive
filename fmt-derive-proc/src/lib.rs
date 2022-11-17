@@ -5,19 +5,19 @@ mod debug;
 mod display;
 
 #[proc_macro_error]
-#[proc_macro_derive(Debug, attributes(debug))]
+#[proc_macro_derive(Debug, attributes(fmt, debug))]
 pub fn debug(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	debug::debug(item, &use_rt())
 }
 
 #[proc_macro_error]
-#[proc_macro_derive(Display, attributes(display))]
+#[proc_macro_derive(Display, attributes(fmt, display))]
 pub fn display(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	display::display(item, &use_rt())
 }
 
 #[proc_macro_error]
-#[proc_macro_derive(Fmt, attributes(debug, display))]
+#[proc_macro_derive(Fmt, attributes(fmt, debug, display))]
 pub fn fmt(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	let use_rt = use_rt();
 	let mut stream = debug::debug(item.clone(), &use_rt);
