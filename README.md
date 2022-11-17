@@ -46,9 +46,7 @@ use fmt_derive::Display;
 use core::fmt::Display;
 ```
 
-If you encounter this problem, there are two simple solutions
-- Qualifying the derive macro. `#[derive(fmt_derive::Debug)]` works just fine
-- Rewriting the imports. `use fmt_derive::Debug;` also pulls in the [`std::fmt::Debug`]/[`core::fmt::Debug`] trait (not just the macro).
+If you encounter this problem, there is a simple solution: `use fmt_derive::Debug;` also pulls in the [`std::fmt::Debug`]/[`core::fmt::Debug`] trait, so you can just remove the `use` of the standard `Debug`.
 ```rust
 # use fmt_derive::_rt; // required for doc-tests in this crate only
 use fmt_derive::Debug; // replace `use std::fmt::Debug;` and `use core::fmt::Debug;`
