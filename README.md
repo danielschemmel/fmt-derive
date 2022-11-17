@@ -6,7 +6,6 @@ implement `Debug`/`Display`. In that case, the generated implementation will pri
 # More Robust
 These derive macros always work, even when `derive(std::fmt::Debug)` fails.
 ```rust
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 struct Unprintable;
 
 #[derive(fmt_derive::Debug, fmt_derive::Display)]
@@ -30,7 +29,6 @@ without any changes required.
 
 However, there is a small problem when `use`ing both at the same time:
 ```rust,compile_fail
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 # fn main() {}
 // error[E0252]: the name `Debug` is defined multiple times
 use fmt_derive::Debug;
@@ -39,7 +37,6 @@ use core::fmt::Debug;
 
 The same problem exists for `Display`:
 ```rust,compile_fail
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 # fn main() {}
 // error[E0252]: the name `Display` is defined multiple times
 use fmt_derive::Display;
@@ -48,7 +45,6 @@ use core::fmt::Display;
 
 If you encounter this problem, there is a simple solution: `use fmt_derive::Debug;` also pulls in the [`std::fmt::Debug`]/[`core::fmt::Debug`] trait, so you can just remove the `use` of the standard `Debug`.
 ```rust
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 use fmt_derive::Debug; // replace `use std::fmt::Debug;` and `use core::fmt::Debug;`
 
 struct Unprintable;
@@ -71,7 +67,6 @@ The derived implementation can be easily customized using additional attributes.
 A custom representation can be quickly derived using a format expression for the whole structure, enumeration, or
 untagged unions. This is the expected case when deriving `Display` or when 
 ```rust
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 use fmt_derive::{Debug, Display};
 
 #[derive(Display, Debug)]
@@ -91,7 +86,6 @@ fn main() {
 ## Custom Format Expressions for Enumeration Variants
 For enumerations, variants can also be customized:
 ```rust
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 use fmt_derive::Debug;
 
 #[derive(Debug)]
@@ -111,7 +105,6 @@ fn main() {
 ## Custom Format Expressions for Individual Fields
 Or by customizing an individual field:
 ```rust
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 use fmt_derive::Debug;
 
 #[derive(Debug)]
@@ -129,7 +122,6 @@ fn main() {
 Although it is possible to derive a debug message for any field, it is sometimes preferable to not print a field at
 all:
 ```rust
-# use fmt_derive::_rt; // required for doc-tests in this crate only
 use fmt_derive::Debug;
 
 #[derive(Debug)]
@@ -149,7 +141,7 @@ This crate is `no_std` and can be used from both `no_std` and `std` contexts wit
 Tests are built in a `std` context to allow usage of `format!` and friends.
 
 # MSRV
-The current MSRV is 1.56.1.
+The current MSRV is 1.56.0.
 
 # TODO
 - The format expressions on enumeration variants and fields show that this crate will probably need a better method of referring to fields (currently, `self` is accessible, which requires unwrapping the variant each time it is used)

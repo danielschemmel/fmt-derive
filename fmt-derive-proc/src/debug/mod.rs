@@ -6,7 +6,7 @@ mod field_attribute;
 mod item_attribute;
 mod variant_attribute;
 
-pub fn debug(item: proc_macro::TokenStream, lib: &proc_macro2::TokenStream) -> proc_macro::TokenStream {
+pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -> proc_macro::TokenStream {
 	let item = parse_macro_input!(item as syn::DeriveInput);
 	let item_name = &item.ident;
 	let generics_params = &item.generics.params;
@@ -53,11 +53,11 @@ pub fn debug(item: proc_macro::TokenStream, lib: &proc_macro2::TokenStream) -> p
 				match item_struct.fields {
 					syn::Fields::Unit => process_unit(&item_name_str),
 					syn::Fields::Unnamed(fields) => {
-						let (destructure, implementation) = process_tuple(&item_name_str, &fields, lib);
+						let (destructure, implementation) = process_tuple(&item_name_str, &fields);
 						quote!(let #item_name #destructure = self; #implementation)
 					}
 					syn::Fields::Named(fields) => {
-						let (destructure, implementation) = process_struct(&item_name_str, &fields, lib);
+						let (destructure, implementation) = process_struct(&item_name_str, &fields);
 						quote!(let #item_name #destructure = self; #implementation)
 					}
 				}
@@ -104,11 +104,11 @@ pub fn debug(item: proc_macro::TokenStream, lib: &proc_macro2::TokenStream) -> p
 									stream.extend(quote!(Self::#variant_name => { #implementation }));
 								}
 								syn::Fields::Unnamed(fields) => {
-									let (destructure, implementation) = process_tuple(&variant_name_str, &fields, lib);
+									let (destructure, implementation) = process_tuple(&variant_name_str, &fields);
 									stream.extend(quote!(Self::#variant_name #destructure => { #implementation }));
 								}
 								syn::Fields::Named(fields) => {
-									let (destructure, implementation) = process_struct(&variant_name_str, &fields, lib);
+									let (destructure, implementation) = process_struct(&variant_name_str, &fields);
 									stream.extend(quote!(Self::#variant_name #destructure => { #implementation }));
 								}
 							}
@@ -124,6 +124,7 @@ pub fn debug(item: proc_macro::TokenStream, lib: &proc_macro2::TokenStream) -> p
 	let result = quote!(
 		impl<#generics_params> ::core::fmt::Debug for #item_name<#generics_params_bare> #generics_where {
 			fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+				#use_rt
 				#debug
 			}
 		}
@@ -142,10 +143,9 @@ fn process_unit(name: &str) -> proc_macro2::TokenStream {
 fn process_tuple(
 	name: &str,
 	fields: &syn::FieldsUnnamed,
-	lib: &proc_macro2::TokenStream,
 ) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
-	let mut chain = quote!(use #lib::_rt::Replacement; let mut w = f.debug_tuple(#name););
+	let mut chain = quote!(use _rt::Replacement; let mut w = f.debug_tuple(#name););
 
 	for (field_number, field) in fields.unnamed.iter().enumerate() {
 		let mut config = field_attribute::FieldAttribute::default();
@@ -163,14 +163,14 @@ fn process_tuple(
 		} else if let Some(format) = config.format {
 			destructure.extend(quote!(_,));
 
-			chain.extend(quote!(w.field(&#lib::_rt::DebugDisplay(&::core::format_args!(#format)));));
+			chain.extend(quote!(w.field(&_rt::DebugDisplay(&::core::format_args!(#format)));));
 		} else {
 			let var_name = proc_macro2::Ident::new(&format!("x{}", field_number), proc_macro2::Span::call_site());
 			destructure.extend(quote!(#var_name,));
 
 			let field_type = &field.ty;
 			let opaque = opaque_object_string(field_type);
-			chain.extend(quote!(#lib::_rt::DebugOrReplacement::<#field_type>(&#var_name).tuple_field(#opaque, &mut w);));
+			chain.extend(quote!(_rt::DebugOrReplacement::<#field_type>(&#var_name).tuple_field(#opaque, &mut w);));
 		}
 	}
 
@@ -180,10 +180,9 @@ fn process_tuple(
 fn process_struct(
 	name: &str,
 	fields: &syn::FieldsNamed,
-	lib: &proc_macro2::TokenStream,
 ) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
-	let mut chain = quote!(use #lib::_rt::Replacement; let mut w = f.debug_struct(#name););
+	let mut chain = quote!(use _rt::Replacement; let mut w = f.debug_struct(#name););
 
 	for field in &fields.named {
 		let mut config = field_attribute::FieldAttribute::default();
@@ -204,7 +203,7 @@ fn process_struct(
 			destructure.extend(quote!(#field_name: _,));
 
 			let field_name_str = field_name.to_string();
-			chain.extend(quote!(w.field(#field_name_str, &#lib::_rt::DebugDisplay(&::core::format_args!(#format)));));
+			chain.extend(quote!(w.field(#field_name_str, &_rt::DebugDisplay(&::core::format_args!(#format)));));
 		} else {
 			let field_name = field.ident.as_ref().expect("a named field should always have a name");
 			destructure.extend(quote!(#field_name,));
@@ -213,7 +212,7 @@ fn process_struct(
 			let field_type = &field.ty;
 			let opaque = opaque_object_string(field_type);
 			chain.extend(
-				quote!(#lib::_rt::DebugOrReplacement::<#field_type>(&#field_name).struct_field(#field_name_str, #opaque, &mut w);),
+				quote!(_rt::DebugOrReplacement::<#field_type>(&#field_name).struct_field(#field_name_str, #opaque, &mut w);),
 			);
 		}
 	}
