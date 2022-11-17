@@ -146,9 +146,9 @@ fn main() {
 ```
 
 # `no_std`
-This crate is `no_std` without any action required.
+This crate is `no_std` and can be used from both `no_std` and `std` contexts without any action required.
 
-Running the tests will enable `std` to make writing tests easier. Again, no action is required.
+Tests are built in a `std` context to allow usage of `format!` and friends.
 
 # MSRV
 The current MSRV is 1.56.1.

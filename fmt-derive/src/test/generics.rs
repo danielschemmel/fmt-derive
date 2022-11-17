@@ -1,5 +1,3 @@
-#![cfg(feature = "std")]
-
 use pretty_assertions::{assert_eq, assert_ne};
 
 mod std {
