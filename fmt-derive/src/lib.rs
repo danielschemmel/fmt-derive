@@ -16,14 +16,14 @@
 //! struct Printable(Unprintable);
 //!
 //! fn main() {
-//! 	// error[E0277]: `Unprintable` doesn't implement `Debug`
-//! 	// println!("{:?}", Unprintable);
+//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
+//!   // println!("{:?}", Unprintable);
 //!
-//! 	assert_eq!(format!("{:?}", Printable(Unprintable)), "Printable(<Unprintable>)");
+//!   assert_eq!(format!("{:?}", Printable(Unprintable)), "Printable(<Unprintable>)");
 //!
-//! 	// deriving display is often more useful with a custom format expression, but will silently fall back to the same
-//! 	// behavior as `Debug`
-//! 	assert_eq!(format!("{}", Printable(Unprintable)), "Printable(<Unprintable>)");
+//!   // deriving display is often more useful with a custom format expression, but will silently fall back to the same
+//!   // behavior as `Debug`
+//!   assert_eq!(format!("{}", Printable(Unprintable)), "Printable(<Unprintable>)");
 //! }
 //! ```
 //!
@@ -63,10 +63,10 @@
 //! struct Printable(Unprintable);
 //!
 //! fn main() {
-//! 	// error[E0277]: `Unprintable` doesn't implement `Debug`
-//! 	// println!("{:?}", Unprintable);
+//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
+//!   // println!("{:?}", Unprintable);
 //!
-//! 	assert_eq!(format!("{:?}", &Printable(Unprintable) as &dyn Debug), "Printable(<Unprintable>)");
+//!   assert_eq!(format!("{:?}", &Printable(Unprintable) as &dyn Debug), "Printable(<Unprintable>)");
 //! }
 //! ```
 //!
@@ -88,11 +88,11 @@
 //! struct Thing(u32);
 //!
 //! fn main() {
-//! 	// error[E0277]: `Unprintable` doesn't implement `Debug`
-//! 	// println!("{:?}", Unprintable);
+//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
+//!   // println!("{:?}", Unprintable);
 //!
-//! 	assert_eq!(format!("{:?}", Thing(0xF7A)), "T<0xF7A>");
-//! 	assert_eq!(format!("{}", Thing(42)), "A thing that sits on the number 42");
+//!   assert_eq!(format!("{:?}", Thing(0xF7A)), "T<0xF7A>");
+//!   assert_eq!(format!("{}", Thing(42)), "A thing that sits on the number 42");
 //! }
 //! ```
 //!
@@ -105,15 +105,15 @@
 //!
 //! #[derive(Debug)]
 //! enum Thing{
-//! 	#[debug("Hello")]
-//! 	Variant(u32),
+//!   #[debug("Hello")]
+//!   Variant(u32),
 //! }
 //!
 //! fn main() {
-//! 	// error[E0277]: `Unprintable` doesn't implement `Debug`
-//! 	// println!("{:?}", Unprintable);
+//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
+//!   // println!("{:?}", Unprintable);
 //!
-//! 	assert_eq!(format!("{:?}", Thing::Variant(0xF7A)), "Hello");
+//!   assert_eq!(format!("{:?}", Thing::Variant(0xF7A)), "Hello");
 //! }
 //! ```
 //!
@@ -128,10 +128,10 @@
 //! struct Thing(#[debug("0x{:X}", self.0)] u32);
 //!
 //! fn main() {
-//! 	// error[E0277]: `Unprintable` doesn't implement `Debug`
-//! 	// println!("{:?}", Unprintable);
+//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
+//!   // println!("{:?}", Unprintable);
 //!
-//! 	assert_eq!(format!("{:?}", Thing(0xF7A)), "Thing(0xF7A)");
+//!   assert_eq!(format!("{:?}", Thing(0xF7A)), "Thing(0xF7A)");
 //! }
 //! ```
 //!
@@ -147,10 +147,10 @@
 //! struct Function(#[debug(ignore)] fn());
 //!
 //! fn main() {
-//! 	// error[E0277]: `Unprintable` doesn't implement `Debug`
-//! 	// println!("{:?}", Unprintable);
+//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
+//!   // println!("{:?}", Unprintable);
 //!
-//! 	assert_eq!(format!("{:?}", Function(main)), "Function");
+//!   assert_eq!(format!("{:?}", Function(main)), "Function");
 //! }
 //! ```
 
