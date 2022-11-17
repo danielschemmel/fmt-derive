@@ -40,8 +40,6 @@ fn main() {
 # `no_std`
 This crate is `no_std` and can be used from both `no_std` and `std` contexts without any action required.
 
-Tests are built in a `std` context to allow usage of `format!` and friends.
-
 # MSRV
 The current MSRV is 1.56.0.
 

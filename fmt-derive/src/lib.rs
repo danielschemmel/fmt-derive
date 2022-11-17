@@ -1,4 +1,4 @@
-#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(test), no_std)] // we build the tests with `std` so that we can use `std::format!` and friends
 
 //! More robust and versatile implementation of `derive(Debug)` and `derive(Display)`. Unlike the version of
 //! `derive(Debug)` in the standard library, these macros will always successfully generate implementation - even if a
