@@ -9,6 +9,7 @@
 //! These derive macros always work, even when `derive(std::fmt::Debug)` fails.
 //!
 //! ```rust
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! struct Unprintable;
 //!
 //! #[derive(fmt_derive::Debug, fmt_derive::Display)]
@@ -33,6 +34,7 @@
 //! However, there is a small problem when `use`ing both at the same time:
 //!
 //! ```rust,compile_fail
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! # fn main() {}
 //! // error[E0252]: the name `Debug` is defined multiple times
 //! use fmt_derive::Debug;
@@ -41,6 +43,7 @@
 //!
 //! The same problem exists for `Display`:
 //! ```rust,compile_fail
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! # fn main() {}
 //! // error[E0252]: the name `Display` is defined multiple times
 //! use fmt_derive::Display;
@@ -51,6 +54,7 @@
 //! [`std::fmt::Debug`]/[`core::fmt::Debug`] trait, so you can just remove the `use` of the standard `Debug`.
 //!
 //! ```rust
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! use fmt_derive::Debug; // replace `use std::fmt::Debug;` and `use core::fmt::Debug;`
 //!
 //! struct Unprintable;
@@ -75,6 +79,7 @@
 //! special manner:
 //!
 //! ```rust
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! use fmt_derive::{Debug, Display};
 //!
 //! #[derive(Display, Debug)]
@@ -95,6 +100,7 @@
 //! For enumerations, variants can also be customized:
 //!
 //! ```rust
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! use fmt_derive::Debug;
 //!
 //! #[derive(Debug)]
@@ -115,6 +121,7 @@
 //! Or by customizing an individual field:
 //!
 //! ```rust
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! use fmt_derive::Debug;
 //!
 //! #[derive(Debug)]
@@ -133,6 +140,7 @@
 //! all:
 //!
 //! ```rust
+//! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 //! use fmt_derive::Debug;
 //!
 //! #[derive(Debug)]
@@ -164,6 +172,7 @@ mod test;
 /// name (due to the specific reexport of [`fmt_derive_proc::Debug`]). This enables the following use case:
 ///
 /// ```
+/// # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
 /// use fmt_derive::Debug;
 ///
 /// #[derive(Debug)]

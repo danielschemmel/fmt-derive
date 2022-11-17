@@ -34,9 +34,6 @@ fn use_rt() -> proc_macro2::TokenStream {
 		)
 	}) {
 		proc_macro_crate::FoundCrate::Itself => quote!(
-			#[cfg(doctest)]
-			use ::fmt_derive::_rt;
-			#[cfg(not(doctest))]
 			use crate::_rt;
 		),
 		proc_macro_crate::FoundCrate::Name(name) => {
