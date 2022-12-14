@@ -107,7 +107,7 @@
 //!   #[debug("Thing::VariantA(0x{:X}, {})", t0, t1)]
 //!   VariantA(u32, u32),
 //!   // struct members are exposed under their name
-//!   #[debug("Thing::VariantB({x})")]
+//!   #[debug("Thing::VariantB({})", x)]
 //!   VariantB{
 //!     x: u32,
 //!     unused: u32,
