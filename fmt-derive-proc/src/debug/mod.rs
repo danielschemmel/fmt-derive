@@ -51,7 +51,7 @@ pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -
 					syn::Fields::Unnamed(fields) => {
 						let mut destructure = quote!();
 						for (field_number, _field) in fields.unnamed.iter().enumerate() {
-							let var_name = proc_macro2::Ident::new(&format!("_{field_number}"), proc_macro2::Span::call_site());
+							let var_name = proc_macro2::Ident::new(&format!("_{}", field_number), proc_macro2::Span::call_site());
 							destructure.extend(quote!(#var_name, ))
 						}
 						quote!(#[allow(unused_variables)] let #item_name(#destructure) = self;)
@@ -117,7 +117,7 @@ pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -
 									let mut destructure = quote!();
 									for (field_number, _field) in fields.unnamed.iter().enumerate() {
 										let var_name =
-											proc_macro2::Ident::new(&format!("_{field_number}"), proc_macro2::Span::call_site());
+											proc_macro2::Ident::new(&format!("_{}", field_number), proc_macro2::Span::call_site());
 										destructure.extend(quote!(#var_name, ))
 									}
 									stream.extend(
@@ -195,7 +195,7 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 			}
 		}
 
-		let var_name = proc_macro2::Ident::new(&format!("_{field_number}"), proc_macro2::Span::call_site());
+		let var_name = proc_macro2::Ident::new(&format!("_{}", field_number), proc_macro2::Span::call_site());
 		destructure.extend(quote!(#var_name,));
 
 		if config.ignore {
