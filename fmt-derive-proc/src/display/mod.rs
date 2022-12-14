@@ -59,7 +59,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 					syn::Fields::Named(fields) => {
 						let mut destructure = quote!();
 						for field in fields.named {
-							let var_name = field.ident.unwrap();
+							let var_name = field.ident.expect("a named field should always have a name");
 							destructure.extend(quote!(#var_name, ))
 						}
 						quote!(let #item_name{#destructure} = self;)
@@ -124,7 +124,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 								syn::Fields::Named(fields) => {
 									let mut destructure = quote!();
 									for field in fields.named {
-										let var_name = field.ident.unwrap();
+										let var_name = field.ident.expect("a named field should always have a name");
 										destructure.extend(quote!(#var_name, ))
 									}
 									stream.extend(quote!(Self::#variant_name{#destructure} => { ::core::write!(fmt_derive_formatter_variable, #format) }));
@@ -190,16 +190,14 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 			}
 		}
 
-		if config.ignore {
-			destructure.extend(quote!(_,));
-		} else if let Some(format) = config.format {
-			destructure.extend(quote!(_,));
+		let var_name = proc_macro2::Ident::new(&format!("x{}", field_number), proc_macro2::Span::call_site());
+		destructure.extend(quote!(#var_name,));
 
+		if config.ignore {
+			// nop
+		} else if let Some(format) = config.format {
 			chain.extend(quote!(w.field(&_rt::DebugDisplay(&::core::format_args!(#format)));));
 		} else {
-			let var_name = proc_macro2::Ident::new(&format!("x{}", field_number), proc_macro2::Span::call_site());
-			destructure.extend(quote!(#var_name,));
-
 			let field_type = &field.ty;
 			let opaque = opaque_object_string(field_type);
 			chain.extend(quote!(_rt::DisplayOrReplacement::<#field_type>(&#var_name).tuple_field(#opaque, &mut w);));
@@ -224,19 +222,15 @@ fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenS
 			}
 		}
 
-		if config.ignore {
-			let field_name = field.ident.as_ref().expect("a named field should always have a name");
-			destructure.extend(quote!(#field_name: _,));
-		} else if let Some(format) = config.format {
-			let field_name = field.ident.as_ref().expect("a named field should always have a name");
-			destructure.extend(quote!(#field_name: _,));
+		let field_name = field.ident.as_ref().expect("a named field should always have a name");
+		destructure.extend(quote!(#field_name: _,));
 
+		if config.ignore {
+			// nop
+		} else if let Some(format) = config.format {
 			let field_name_str = field_name.to_string();
 			chain.extend(quote!(w.field(#field_name_str, &_rt::DebugDisplay(&::core::format_args!(#format)));));
 		} else {
-			let field_name = field.ident.as_ref().expect("a named field should always have a name");
-			destructure.extend(quote!(#field_name,));
-
 			let field_name_str = field_name.to_string();
 			let field_type = &field.ty;
 			let opaque = opaque_object_string(field_type);
