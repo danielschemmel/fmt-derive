@@ -110,7 +110,7 @@
 //!   #[debug("Thing::VariantB({x})")]
 //!   VariantB{
 //!     x: u32,
-//! 		unused: u32,
+//!     unused: u32,
 //!   }
 //! }
 //!
