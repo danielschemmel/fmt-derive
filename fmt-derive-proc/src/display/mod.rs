@@ -45,7 +45,31 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 
 	let display = match item_config.format {
 		Some(format) => {
-			quote!(::core::write!(f, #format))
+			let mut result = match item.data {
+				syn::Data::Struct(item_struct) => match item_struct.fields {
+					syn::Fields::Unit => quote!(),
+					syn::Fields::Unnamed(fields) => {
+						let mut destructure = quote!();
+						for (field_number, _field) in fields.unnamed.iter().enumerate() {
+							let var_name = proc_macro2::Ident::new(&format!("t{}", field_number), proc_macro2::Span::call_site());
+							destructure.extend(quote!(#var_name, ))
+						}
+						quote!(let #item_name(#destructure) = self;)
+					}
+					syn::Fields::Named(fields) => {
+						let mut destructure = quote!();
+						for field in fields.named {
+							let var_name = field.ident.unwrap();
+							destructure.extend(quote!(#var_name, ))
+						}
+						quote!(let #item_name{#destructure} = self;)
+					}
+				},
+				syn::Data::Enum(_) => quote!(),
+				syn::Data::Union(_) => quote!(),
+			};
+			result.extend(quote!(::core::write!(fmt_derive_formatter_variable, #format)));
+			result
 		}
 		None => match item.data {
 			syn::Data::Struct(item_struct) => {
@@ -64,7 +88,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 			}
 			syn::Data::Union(_) => {
 				let name = format!("<{}>", item.ident);
-				quote!(::core::write!(f, #name))
+				quote!(::core::write!(fmt_derive_formatter_variable, #name))
 			}
 			syn::Data::Enum(item_enum) => {
 				if item_enum.variants.is_empty() {
@@ -86,15 +110,16 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 						if let Some(format) = variant_config.format {
 							match variant.fields {
 								syn::Fields::Unit => {
-									stream.extend(quote!(Self::#variant_name => { ::core::write!(f, #format) }));
+									stream.extend(quote!(Self::#variant_name => { ::core::write!(fmt_derive_formatter_variable, #format) }));
 								}
 								syn::Fields::Unnamed(fields) => {
 									let mut destructure = quote!();
 									for (field_number, _field) in fields.unnamed.iter().enumerate() {
-										let var_name = proc_macro2::Ident::new(&format!("t{}", field_number), proc_macro2::Span::call_site());
+										let var_name =
+											proc_macro2::Ident::new(&format!("t{}", field_number), proc_macro2::Span::call_site());
 										destructure.extend(quote!(#var_name, ))
 									}
-									stream.extend(quote!(Self::#variant_name(#destructure) => { ::core::write!(f, #format) }));
+									stream.extend(quote!(Self::#variant_name(#destructure) => { ::core::write!(fmt_derive_formatter_variable, #format) }));
 								}
 								syn::Fields::Named(fields) => {
 									let mut destructure = quote!();
@@ -102,7 +127,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 										let var_name = field.ident.unwrap();
 										destructure.extend(quote!(#var_name, ))
 									}
-									stream.extend(quote!(Self::#variant_name{#destructure} => { ::core::write!(f, #format) }));
+									stream.extend(quote!(Self::#variant_name{#destructure} => { ::core::write!(fmt_derive_formatter_variable, #format) }));
 								}
 							}
 						} else {
@@ -133,7 +158,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 
 	let result = quote!(
 		impl<#generics_params> ::core::fmt::Display for #item_name<#generics_params_bare> #generics_where {
-			fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+			fn fmt(&self, fmt_derive_formatter_variable: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
 				#use_rt
 				#display
 			}
@@ -147,12 +172,12 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 }
 
 fn process_unit(name: &str) -> proc_macro2::TokenStream {
-	quote!(f.debug_struct(#name).finish())
+	quote!(fmt_derive_formatter_variable.debug_struct(#name).finish())
 }
 
 fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
-	let mut chain = quote!(use _rt::Replacement; let mut w = f.debug_tuple(#name););
+	let mut chain = quote!(use _rt::Replacement; let mut w = fmt_derive_formatter_variable.debug_tuple(#name););
 
 	for (field_number, field) in fields.unnamed.iter().enumerate() {
 		let mut config = field_attribute::FieldAttribute::default();
@@ -186,7 +211,7 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 
 fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
-	let mut chain = quote!(use _rt::Replacement; let mut w = f.debug_struct(#name););
+	let mut chain = quote!(use _rt::Replacement; let mut w = fmt_derive_formatter_variable.debug_struct(#name););
 
 	for field in &fields.named {
 		let mut config = field_attribute::FieldAttribute::default();
