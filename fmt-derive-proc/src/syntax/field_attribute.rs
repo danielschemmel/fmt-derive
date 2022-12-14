@@ -31,15 +31,15 @@ impl Parse for FieldAttribute {
 				let lookahead = args.lookahead1();
 
 				if !args.is_empty() {
-					if lookahead.peek(super::kw::ignore) {
+					if lookahead.peek(syn::LitStr) {
+						result.format = Some(args.parse()?);
+					} else if lookahead.peek(super::kw::ignore) {
 						let _kw: super::kw::ignore = args.parse()?;
 						result.ignore = true;
 						if !args.is_empty() {
 							let lookahead = args.lookahead1();
 							return Err(lookahead.error());
 						}
-					} else if lookahead.peek(syn::LitStr) {
-						result.format = Some(args.parse()?);
 					} else {
 						return Err(lookahead.error());
 					}
