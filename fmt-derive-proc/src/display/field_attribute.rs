@@ -1,4 +1,3 @@
-use quote::quote;
 use syn::parenthesized;
 use syn::parse::{Parse, ParseStream};
 
@@ -36,7 +35,8 @@ impl Parse for FieldAttribute {
 						let _kw: crate::kw::ignore = args.parse()?;
 						result.ignore = true;
 						if !args.is_empty() {
-							return Err(syn::Error::new_spanned(quote!(args), "Unexpected tokens"));
+							let lookahead = args.lookahead1();
+							return Err(lookahead.error());
 						}
 					} else if lookahead.peek(syn::LitStr) {
 						result.format = Some(args.parse()?);
