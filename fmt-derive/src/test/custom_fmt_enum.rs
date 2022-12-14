@@ -6,13 +6,13 @@ pub struct Unprintable(u32);
 
 #[derive(Debug, Display)]
 pub enum Tuple {
-	#[fmt("V({})", t0)]
+	#[fmt("V({})", _0)]
 	Variant(u32),
 }
 
 #[derive(Debug, Display)]
 pub enum TupleUnprintable {
-	#[fmt("V({})", t0.0)]
+	#[fmt("V({})", _0.0)]
 	Variant(Unprintable),
 }
 

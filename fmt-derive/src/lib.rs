@@ -103,8 +103,8 @@
 //!
 //! #[derive(Debug)]
 //! enum Thing{
-//!   // tuple members are exposed as `t0`, `t1`, and so forth
-//!   #[debug("Thing::VariantA(0x{:X}, {})", t0, t1)]
+//!   // tuple members are exposed as `_0`, `_1`, and so forth
+//!   #[debug("Thing::VariantA(0x{:X}, {})", _0, _1)]
 //!   VariantA(u32, u32),
 //!   // struct members are exposed under their name
 //!   #[debug("Thing::VariantB({})", x)]
