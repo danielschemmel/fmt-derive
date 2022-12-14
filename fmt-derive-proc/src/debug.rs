@@ -2,11 +2,9 @@ use proc_macro_error::{abort_if_dirty, emit_error};
 use quote::quote;
 use syn::parse_macro_input;
 
-mod field_attribute;
-mod item_attribute;
-mod variant_attribute;
+use crate::syntax::{field_attribute, item_attribute, variant_attribute};
 
-pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -> proc_macro::TokenStream {
+pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -> proc_macro::TokenStream {
 	let item = parse_macro_input!(item as syn::DeriveInput);
 	let item_name = &item.ident;
 	let generics_params = &item.generics.params;
@@ -34,7 +32,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 
 	let mut item_config = item_attribute::ItemAttribute::default();
 	for attribute in &item.attrs {
-		if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
+		if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
 			match syn::parse2(attribute.tokens.clone()) {
 				Ok(value) => item_config.update(value),
 				Err(err) => emit_error!(err),
@@ -43,7 +41,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 	}
 	abort_if_dirty();
 
-	let display = match item_config.format {
+	let debug = match item_config.format {
 		Some(format) => {
 			let mut result = match item.data {
 				syn::Data::Struct(item_struct) => match item_struct.fields {
@@ -100,7 +98,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 						let variant_name = variant.ident;
 						let mut variant_config = variant_attribute::VariantAttribute::default();
 						for attribute in &variant.attrs {
-							if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
+							if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
 								match syn::parse2(attribute.tokens.clone()) {
 									Ok(value) => variant_config.update(value),
 									Err(err) => emit_error!(err),
@@ -162,10 +160,10 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 	};
 
 	let result = quote!(
-		impl<#generics_params> ::core::fmt::Display for #item_name<#generics_params_bare> #generics_where {
+		impl<#generics_params> ::core::fmt::Debug for #item_name<#generics_params_bare> #generics_where {
 			fn fmt(&self, fmt_derive_formatter_variable: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
 				#use_rt
-				#display
+				#debug
 			}
 		}
 	)
@@ -187,7 +185,7 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 	for (field_number, field) in fields.unnamed.iter().enumerate() {
 		let mut config = field_attribute::FieldAttribute::default();
 		for attribute in &field.attrs {
-			if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
+			if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
 				match syn::parse2(attribute.tokens.clone()) {
 					Ok(value) => config.update(value),
 					Err(err) => emit_error!(err),
@@ -205,7 +203,7 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 		} else {
 			let field_type = &field.ty;
 			let opaque = opaque_object_string(field_type);
-			chain.extend(quote!(_rt::DisplayOrReplacement::<#field_type>(&#var_name).tuple_field(#opaque, &mut w);));
+			chain.extend(quote!(_rt::DebugOrReplacement::<#field_type>(&#var_name).tuple_field(#opaque, &mut w);));
 		}
 	}
 
@@ -219,7 +217,7 @@ fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenS
 	for field in &fields.named {
 		let mut config = field_attribute::FieldAttribute::default();
 		for attribute in &field.attrs {
-			if attribute.path.is_ident("fmt") || attribute.path.is_ident("display") {
+			if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
 				match syn::parse2(attribute.tokens.clone()) {
 					Ok(value) => config.update(value),
 					Err(err) => emit_error!(err),
@@ -240,7 +238,7 @@ fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenS
 			let field_type = &field.ty;
 			let opaque = opaque_object_string(field_type);
 			chain.extend(
-				quote!(_rt::DisplayOrReplacement::<#field_type>(&#field_name).struct_field(#field_name_str, #opaque, &mut w);),
+				quote!(_rt::DebugOrReplacement::<#field_type>(&#field_name).struct_field(#field_name_str, #opaque, &mut w);),
 			);
 		}
 	}

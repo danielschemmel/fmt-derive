@@ -3,7 +3,7 @@ use quote::quote;
 
 mod debug;
 mod display;
-mod kw;
+mod syntax;
 
 #[proc_macro_error]
 #[proc_macro_derive(Debug, attributes(fmt, debug))]
