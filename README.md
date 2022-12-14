@@ -2,13 +2,14 @@
 [![docs.rs](https://img.shields.io/docsrs/fmt-derive?style=flat-square)](https://docs.rs/fmt-derive/latest/fmt_derive/)
 
 More robust and versatile implementation of `derive(Debug)` and `derive(Display)`. Unlike the version of`derive(Debug)`
-in the standard library, these macros will always successfully generate implementation - even if a member does not
+in the standard library, these macros will always successfully generate an implementation - even if a member does not
 implement `Debug`/`Display`. In that case, the generated implementation will print a replacement string of the form
 `<TypeName>`.
 
 ```rust
 use fmt_derive::Debug; // replacement for `use std::fmt::Debug;`
 
+// a type that implements neither `Debug` nor `Display`
 struct Unprintable;
 
 #[derive(Debug, crate::Display)]

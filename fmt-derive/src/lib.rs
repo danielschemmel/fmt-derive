@@ -1,8 +1,8 @@
 #![cfg_attr(not(test), no_std)] // we build the tests with `std` so that we can use `std::format!` and friends
 
 //! More robust and versatile implementation of `derive(Debug)` and `derive(Display)`. Unlike the version of
-//! `derive(Debug)` in the standard library, these macros will always successfully generate implementation - even if a
-//! member does not implement `Debug`/`Display`. In that case, the generated implementation will print a replacement
+//! `derive(Debug)` in the standard library, these macros will always successfully generate an implementation - even if
+//! a member does not implement `Debug`/`Display`. In that case, the generated implementation will print a replacement
 //! string of the form `<TypeName>`.
 //!
 //! # More Robust
@@ -10,6 +10,7 @@
 //!
 //! ```rust
 //! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
+//! // a type that implements neither `Debug` nor `Display`
 //! struct Unprintable;
 //!
 //! #[derive(fmt_derive::Debug, fmt_derive::Display)]
@@ -31,7 +32,7 @@
 //! Anything that derives [`std::fmt::Debug`] or [`core::fmt::Debug`] can derive [`fmt_derive::Debug`](`Debug`) instead
 //! without any changes required.
 //!
-//! However, there is a small problem when `use`ing both at the same time:
+//! However, both cannot be `use`d at the same time, as their names clash:
 //!
 //! ```rust,compile_fail
 //! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
@@ -51,7 +52,7 @@
 //! ```
 //!
 //! If you encounter this problem, there is a simple solution: `use fmt_derive::Debug;` also pulls in the
-//! [`std::fmt::Debug`]/[`core::fmt::Debug`] trait, so you can just remove the `use` of the standard `Debug`.
+//! [`std::fmt::Debug`]/[`core::fmt::Debug`] trait, there is no need to `use` the standard library `Debug`.
 //!
 //! ```rust
 //! # use fmt_derive::_rt; // required for doctests in the `fmt_derive` crate only
@@ -88,9 +89,6 @@
 //! struct Thing(u32);
 //!
 //! fn main() {
-//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
-//!   // println!("{:?}", Unprintable);
-//!
 //!   assert_eq!(format!("{:?}", Thing(0xF7A)), "T<0xF7A>");
 //!   assert_eq!(format!("{}", Thing(42)), "A thing that sits on the number 42");
 //! }
@@ -110,9 +108,6 @@
 //! }
 //!
 //! fn main() {
-//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
-//!   // println!("{:?}", Unprintable);
-//!
 //!   assert_eq!(format!("{:?}", Thing::Variant(0xF7A)), "Hello");
 //! }
 //! ```
@@ -128,9 +123,6 @@
 //! struct Thing(#[debug("0x{:X}", self.0)] u32);
 //!
 //! fn main() {
-//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
-//!   // println!("{:?}", Unprintable);
-//!
 //!   assert_eq!(format!("{:?}", Thing(0xF7A)), "Thing(0xF7A)");
 //! }
 //! ```
@@ -147,9 +139,6 @@
 //! struct Function(#[debug(ignore)] fn());
 //!
 //! fn main() {
-//!   // error[E0277]: `Unprintable` doesn't implement `Debug`
-//!   // println!("{:?}", Unprintable);
-//!
 //!   assert_eq!(format!("{:?}", Function(main)), "Function");
 //! }
 //! ```
