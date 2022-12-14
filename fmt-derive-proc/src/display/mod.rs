@@ -54,7 +54,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 							let var_name = proc_macro2::Ident::new(&format!("t{}", field_number), proc_macro2::Span::call_site());
 							destructure.extend(quote!(#var_name, ))
 						}
-						quote!(let #item_name(#destructure) = self;)
+						quote!(#[allow(unused_variables)] let #item_name(#destructure) = self;)
 					}
 					syn::Fields::Named(fields) => {
 						let mut destructure = quote!();
@@ -62,7 +62,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 							let var_name = field.ident.expect("a named field should always have a name");
 							destructure.extend(quote!(#var_name, ))
 						}
-						quote!(let #item_name{#destructure} = self;)
+						quote!(#[allow(unused_variables)] let #item_name{#destructure} = self;)
 					}
 				},
 				syn::Data::Enum(_) => quote!(),
@@ -78,11 +78,11 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 					syn::Fields::Unit => process_unit(&item_name_str),
 					syn::Fields::Unnamed(fields) => {
 						let (destructure, implementation) = process_tuple(&item_name_str, &fields);
-						quote!(let #item_name #destructure = self; #implementation)
+						quote!(#[allow(unused_variables)] let #item_name #destructure = self; #implementation)
 					}
 					syn::Fields::Named(fields) => {
 						let (destructure, implementation) = process_struct(&item_name_str, &fields);
-						quote!(let #item_name #destructure = self; #implementation)
+						quote!(#[allow(unused_variables)] let #item_name #destructure = self; #implementation)
 					}
 				}
 			}
