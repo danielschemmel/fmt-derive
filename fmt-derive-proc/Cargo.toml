@@ -1,6 +1,6 @@
 [package]
 name = "fmt-derive-proc"
-version = "0.0.4"
+version = "0.0.5"
 description = "A more robust and versatile derive macro for Debug and Display."
 readme = "README.md"
 authors = ["Daniel Schemmel <daniel@schemmel.net>"]
