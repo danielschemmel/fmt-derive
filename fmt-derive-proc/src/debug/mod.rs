@@ -228,7 +228,7 @@ fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenS
 		}
 
 		let field_name = field.ident.as_ref().expect("a named field should always have a name");
-		destructure.extend(quote!(#field_name: _,));
+		destructure.extend(quote!(#field_name,));
 
 		if config.ignore {
 			// nop
