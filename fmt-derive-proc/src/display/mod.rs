@@ -110,7 +110,8 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 						if let Some(format) = variant_config.format {
 							match variant.fields {
 								syn::Fields::Unit => {
-									stream.extend(quote!(Self::#variant_name => { ::core::write!(fmt_derive_formatter_variable, #format) }));
+									stream
+										.extend(quote!(Self::#variant_name => { ::core::write!(fmt_derive_formatter_variable, #format) }));
 								}
 								syn::Fields::Unnamed(fields) => {
 									let mut destructure = quote!();
@@ -119,7 +120,9 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 											proc_macro2::Ident::new(&format!("t{}", field_number), proc_macro2::Span::call_site());
 										destructure.extend(quote!(#var_name, ))
 									}
-									stream.extend(quote!(Self::#variant_name(#destructure) => { ::core::write!(fmt_derive_formatter_variable, #format) }));
+									stream.extend(
+										quote!(Self::#variant_name(#destructure) => { ::core::write!(fmt_derive_formatter_variable, #format) }),
+									);
 								}
 								syn::Fields::Named(fields) => {
 									let mut destructure = quote!();
@@ -127,7 +130,9 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 										let var_name = field.ident.expect("a named field should always have a name");
 										destructure.extend(quote!(#var_name, ))
 									}
-									stream.extend(quote!(Self::#variant_name{#destructure} => { ::core::write!(fmt_derive_formatter_variable, #format) }));
+									stream.extend(
+										quote!(Self::#variant_name{#destructure} => { ::core::write!(fmt_derive_formatter_variable, #format) }),
+									);
 								}
 							}
 						} else {
