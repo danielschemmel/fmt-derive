@@ -88,11 +88,21 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 								syn::Fields::Unit => {
 									stream.extend(quote!(Self::#variant_name => { ::core::write!(f, #format) }));
 								}
-								syn::Fields::Unnamed(_fields) => {
-									stream.extend(quote!(Self::#variant_name(..) => { ::core::write!(f, #format) }));
+								syn::Fields::Unnamed(fields) => {
+									let mut destructure = quote!();
+									for (field_number, _field) in fields.unnamed.iter().enumerate() {
+										let var_name = proc_macro2::Ident::new(&format!("t{}", field_number), proc_macro2::Span::call_site());
+										destructure.extend(quote!(#var_name, ))
+									}
+									stream.extend(quote!(Self::#variant_name(#destructure) => { ::core::write!(f, #format) }));
 								}
-								syn::Fields::Named(_fields) => {
-									stream.extend(quote!(Self::#variant_name{..} => { ::core::write!(f, #format) }));
+								syn::Fields::Named(fields) => {
+									let mut destructure = quote!();
+									for field in fields.named {
+										let var_name = field.ident.unwrap();
+										destructure.extend(quote!(#var_name, ))
+									}
+									stream.extend(quote!(Self::#variant_name{#destructure} => { ::core::write!(f, #format) }));
 								}
 							}
 						} else {

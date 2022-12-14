@@ -103,12 +103,20 @@
 //!
 //! #[derive(Debug)]
 //! enum Thing{
-//!   #[debug("Hello")]
-//!   Variant(u32),
+//!   // tuple members are exposed as `t0`, `t1`, and so forth
+//!   #[debug("Thing::VariantA(0x{:X}, {})", t0, t1)]
+//!   VariantA(u32, u32),
+//!   // struct members are exposed under their name
+//!   #[debug("Thing::VariantB({x})")]
+//!   VariantB{
+//!     x: u32,
+//! 		unused: u32,
+//!   }
 //! }
 //!
 //! fn main() {
-//!   assert_eq!(format!("{:?}", Thing::Variant(0xF7A)), "Hello");
+//!   assert_eq!(format!("{:?}", Thing::VariantA(0xF7A, 42)), "Thing::VariantA(0xF7A, 42)");
+//!   assert_eq!(format!("{:?}", Thing::VariantB{x: 42, unused: 0}), "Thing::VariantB(42)");
 //! }
 //! ```
 //!
