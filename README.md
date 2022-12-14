@@ -43,6 +43,3 @@ This crate is `no_std` and can be used from both `no_std` and `std` contexts wit
 
 # MSRV
 The current MSRV is 1.56.0.
-
-# TODO
-- The format expressions on enumeration variants and fields show that this crate will probably need a better method of referring to fields (currently, `self` is accessible, which requires unwrapping the variant each time it is used)
