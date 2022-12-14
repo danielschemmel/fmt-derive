@@ -1,6 +1,6 @@
 use quote::quote;
+use syn::parenthesized;
 use syn::parse::{Parse, ParseStream};
-use syn::{parenthesized, Ident};
 
 #[derive(Clone, Debug, Default)]
 pub struct FieldAttribute {
@@ -32,15 +32,11 @@ impl Parse for FieldAttribute {
 				let lookahead = args.lookahead1();
 
 				if !args.is_empty() {
-					if lookahead.peek(Ident) {
-						let id: Ident = args.parse()?;
-						if id == "ignore" {
-							result.ignore = true;
-							if !args.is_empty() {
-								return Err(syn::Error::new_spanned(quote!(args), "Unexpected tokens"));
-							}
-						} else {
-							return Err(syn::Error::new_spanned(id, "Expected: ignore"));
+					if lookahead.peek(crate::kw::ignore) {
+						let _kw: crate::kw::ignore = args.parse()?;
+						result.ignore = true;
+						if !args.is_empty() {
+							return Err(syn::Error::new_spanned(quote!(args), "Unexpected tokens"));
 						}
 					} else if lookahead.peek(syn::LitStr) {
 						result.format = Some(args.parse()?);
