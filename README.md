@@ -12,7 +12,7 @@ use fmt_derive::Debug; // replacement for `use std::fmt::Debug;`
 // a type that implements neither `Debug` nor `Display`
 struct Unprintable;
 
-#[derive(Debug, crate::Display)]
+#[derive(Debug, fmt_derive::Display)]
 struct Printable {
 	// unprintable members will be printed as `<Type>`
 	unprintable: Unprintable,
