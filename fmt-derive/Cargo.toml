@@ -1,6 +1,6 @@
 [package]
 name = "fmt-derive"
-version = "0.0.3"
+version = "0.0.4"
 description = "A more robust and versatile derive macro for Debug and Display."
 readme = "README.md"
 authors = ["Daniel Schemmel <daniel@schemmel.net>"]
@@ -11,7 +11,7 @@ edition = "2021"
 rust-version = "1.56.0"
 
 [dependencies]
-fmt-derive-proc = { version = "=0.0.3", path = "../fmt-derive-proc" }
+fmt-derive-proc = { version = "=0.0.4", path = "../fmt-derive-proc" }
 
 [dev-dependencies]
 pretty_assertions = "1.3.0"
