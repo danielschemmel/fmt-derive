@@ -52,12 +52,12 @@ mod our {
 }
 
 #[test]
-fn unit_struct_test() {
+fn unit_variant_test() {
 	assert_eq!(format!("{:?}", std::Unit::Variant), format!("{:?}", our::Unit::Variant));
 }
 
 #[test]
-fn tuple_struct_test() {
+fn tuple_variant_test() {
 	assert_eq!(
 		format!("{:?}", std::Tuple::Variant(0)),
 		format!("{:?}", our::Tuple::Variant(0))
@@ -69,7 +69,7 @@ fn tuple_struct_test() {
 }
 
 #[test]
-fn struct_test() {
+fn struct_variant_test() {
 	assert_eq!(
 		format!("{:?}", std::Struct::Variant { x: 0 }),
 		format!("{:?}", our::Struct::Variant { x: 0 })
