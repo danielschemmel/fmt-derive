@@ -8,7 +8,7 @@ repository = "https://github.com/danielschemmel/fmt-derive"
 license = "MIT OR Apache-2.0"
 
 edition = "2021"
-rust-version = "1.56.0"
+rust-version = "1.60.0"
 
 [dependencies]
 fmt-derive-proc = { version = "=0.0.5", path = "../fmt-derive-proc" }
