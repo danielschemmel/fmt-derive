@@ -1,4 +1,3 @@
-use syn::parenthesized;
 use syn::parse::{Parse, ParseStream};
 
 #[derive(Clone, Debug, Default)]
@@ -20,35 +19,24 @@ impl FieldAttribute {
 
 impl Parse for FieldAttribute {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
-		let mut result = Default::default();
-		if input.is_empty() {
-			Ok(result)
-		} else {
-			let lookahead = input.lookahead1();
-			if lookahead.peek(syn::token::Paren) {
-				let args;
-				parenthesized!(args in input);
-				let lookahead = args.lookahead1();
+		let mut result = Self::default();
+		let lookahead = input.lookahead1();
 
-				if !args.is_empty() {
-					if lookahead.peek(syn::LitStr) {
-						result.format = Some(args.parse()?);
-					} else if lookahead.peek(super::kw::ignore) {
-						let _kw: super::kw::ignore = args.parse()?;
-						result.ignore = true;
-						if !args.is_empty() {
-							let lookahead = args.lookahead1();
-							return Err(lookahead.error());
-						}
-					} else {
-						return Err(lookahead.error());
-					}
+		if !input.is_empty() {
+			if lookahead.peek(syn::LitStr) {
+				result.format = Some(input.parse()?);
+			} else if lookahead.peek(super::kw::ignore) {
+				let _kw: super::kw::ignore = input.parse()?;
+				result.ignore = true;
+				if !input.is_empty() {
+					let lookahead = input.lookahead1();
+					return Err(lookahead.error());
 				}
-
-				Ok(result)
 			} else {
-				Err(lookahead.error())
+				return Err(lookahead.error());
 			}
 		}
+
+		Ok(result)
 	}
 }

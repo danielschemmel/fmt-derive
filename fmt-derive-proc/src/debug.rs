@@ -32,10 +32,10 @@ pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -
 
 	let mut item_config = item_attribute::ItemAttribute::default();
 	for attribute in &item.attrs {
-		if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
-			match syn::parse2(attribute.tokens.clone()) {
+		if attribute.path().is_ident("fmt") || attribute.path().is_ident("debug") {
+			match attribute.parse_args() {
 				Ok(value) => item_config.update(value),
-				Err(err) => emit_error!(err),
+				Err(err) => emit_error!(attribute, err),
 			}
 		}
 	}
@@ -98,10 +98,10 @@ pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -
 						let variant_name = variant.ident;
 						let mut variant_config = variant_attribute::VariantAttribute::default();
 						for attribute in &variant.attrs {
-							if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
-								match syn::parse2(attribute.tokens.clone()) {
+							if attribute.path().is_ident("fmt") || attribute.path().is_ident("debug") {
+								match attribute.parse_args() {
 									Ok(value) => variant_config.update(value),
-									Err(err) => emit_error!(err),
+									Err(err) => emit_error!(attribute, err),
 								}
 							}
 						}
@@ -185,10 +185,10 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 	for (field_number, field) in fields.unnamed.iter().enumerate() {
 		let mut config = field_attribute::FieldAttribute::default();
 		for attribute in &field.attrs {
-			if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
-				match syn::parse2(attribute.tokens.clone()) {
+			if attribute.path().is_ident("fmt") || attribute.path().is_ident("debug") {
+				match attribute.parse_args() {
 					Ok(value) => config.update(value),
-					Err(err) => emit_error!(err),
+					Err(err) => emit_error!(attribute, err),
 				}
 			}
 		}
@@ -217,10 +217,10 @@ fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenS
 	for field in &fields.named {
 		let mut config = field_attribute::FieldAttribute::default();
 		for attribute in &field.attrs {
-			if attribute.path.is_ident("fmt") || attribute.path.is_ident("debug") {
-				match syn::parse2(attribute.tokens.clone()) {
+			if attribute.path().is_ident("fmt") || attribute.path().is_ident("debug") {
+				match attribute.parse_args() {
 					Ok(value) => config.update(value),
-					Err(err) => emit_error!(err),
+					Err(err) => emit_error!(attribute, err),
 				}
 			}
 		}
