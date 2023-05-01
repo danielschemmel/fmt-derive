@@ -42,4 +42,4 @@ fn main() {
 This crate is `no_std` and can be used from both `no_std` and `std` contexts without any action required.
 
 # MSRV
-The current MSRV is 1.56.0.
+The current MSRV is 1.60.0.
