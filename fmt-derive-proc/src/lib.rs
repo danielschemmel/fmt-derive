@@ -30,7 +30,7 @@ fn use_rt() -> proc_macro2::TokenStream {
 	match proc_macro_crate::crate_name("fmt-derive").unwrap_or_else(|err| {
 		proc_macro_error::abort_call_site!(
 			"{}", err;
-			help = "The `fmt-derive` must be used directly.";
+			help = "The `fmt-derive` crate must be used directly.";
 			note = "Did you accidentally import `fmt-derive-proc` instead?"
 		)
 	}) {
