@@ -3,6 +3,7 @@ use quote::quote;
 
 mod debug;
 mod display;
+mod generics;
 mod syntax;
 
 #[proc_macro_error]

@@ -2,33 +2,12 @@ use proc_macro_error::{abort_if_dirty, emit_error};
 use quote::quote;
 use syn::parse_macro_input;
 
+use crate::generics::GenericVariants;
 use crate::syntax::{field_attribute, item_attribute, variant_attribute};
 
 pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -> proc_macro::TokenStream {
 	let item = parse_macro_input!(item as syn::DeriveInput);
 	let item_name = &item.ident;
-	let generics_params = &item.generics.params;
-	let generics_params_bare = generics_params
-		.pairs()
-		.map(|param| {
-			let comma = param.punct();
-			match param.value() {
-				syn::GenericParam::Type(ty) => {
-					let id = &ty.ident;
-					quote!(#id #comma)
-				}
-				syn::GenericParam::Lifetime(lifetime) => {
-					let id = &lifetime.lifetime;
-					quote!(#id #comma)
-				}
-				syn::GenericParam::Const(val) => {
-					let id = &val.ident;
-					quote!(#id #comma)
-				}
-			}
-		})
-		.collect::<proc_macro2::TokenStream>();
-	let generics_where = &item.generics.where_clause;
 
 	let mut item_config = item_attribute::ItemAttribute::default();
 	for attribute in &item.attrs {
@@ -159,19 +138,23 @@ pub fn debug(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -
 		},
 	};
 
+	let GenericVariants {
+		params_bare: generics_params_bare,
+		params_no_defaults: generics_params_no_defaults,
+		where_clause: generics_where,
+	} = GenericVariants::new(&item.generics);
 	let result = quote!(
-		impl<#generics_params> ::core::fmt::Debug for #item_name<#generics_params_bare> #generics_where {
+		impl<#generics_params_no_defaults> ::core::fmt::Debug for #item_name<#generics_params_bare> #generics_where {
 			fn fmt(&self, fmt_derive_formatter_variable: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
 				#use_rt
 				#debug
 			}
 		}
-	)
-	.into();
+	);
 	// println!("{}", result);
 
 	abort_if_dirty();
-	result
+	result.into()
 }
 
 fn process_unit(name: &str) -> proc_macro2::TokenStream {
