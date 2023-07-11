@@ -27,7 +27,7 @@ mod our {
 		use crate::Debug;
 
 		#[derive(Debug)]
-		pub struct Unit<'a, T: Debug + ?Sized>(pub &'a T);
+		pub struct Unit<'a, T: Debug + ?Sized = ()>(pub &'a T);
 	}
 }
 
