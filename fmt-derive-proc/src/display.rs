@@ -1,4 +1,4 @@
-use proc_macro_error::{abort_if_dirty, emit_error};
+use proc_macro_error2::{abort_if_dirty, emit_error};
 use quote::quote;
 use syn::parse_macro_input;
 

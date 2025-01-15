@@ -1,4 +1,4 @@
-use proc_macro_error::proc_macro_error;
+use proc_macro_error2::proc_macro_error;
 use quote::quote;
 
 mod debug;
@@ -29,7 +29,7 @@ pub fn fmt(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
 fn use_rt() -> proc_macro2::TokenStream {
 	match proc_macro_crate::crate_name("fmt-derive").unwrap_or_else(|err| {
-		proc_macro_error::abort_call_site!(
+		proc_macro_error2::abort_call_site!(
 			"{}", err;
 			help = "The `fmt-derive` crate must be used directly.";
 			note = "Did you accidentally import `fmt-derive-proc` instead?"
