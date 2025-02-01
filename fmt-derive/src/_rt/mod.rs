@@ -1,8 +1,8 @@
 #![doc(hidden)]
-/// This module contains the runtime used by the implementations generated from the derive macros.
-///
-/// The whole of this module is semver version exempt, as it is not intended to be used directly (think of it as an
-/// unexposed internal dependency).
+//! This module contains the runtime used by the implementations generated from the derive macros.
+//!
+//! The whole of this module is semver version exempt, as it is not intended to be used directly (think of it as an
+//! unexposed internal dependency).
 
 pub trait Replacement {
 	fn tuple_field<'a, 'b, 'c>(
@@ -26,7 +26,7 @@ impl<T> Replacement for T {}
 
 pub struct DebugOrReplacement<'a, T>(pub &'a T);
 
-impl<'a, T: core::fmt::Debug> DebugOrReplacement<'a, T> {
+impl<T: core::fmt::Debug> DebugOrReplacement<'_, T> {
 	pub fn tuple_field<'b, 'c, 'd>(
 		&self,
 		_replacement: &str,
@@ -47,7 +47,7 @@ impl<'a, T: core::fmt::Debug> DebugOrReplacement<'a, T> {
 
 pub struct DisplayOrReplacement<'a, T>(pub &'a T);
 
-impl<'a, T: core::fmt::Display> DisplayOrReplacement<'a, T> {
+impl<T: core::fmt::Display> DisplayOrReplacement<'_, T> {
 	pub fn tuple_field<'b, 'c, 'd>(
 		&self,
 		_replacement: &str,
@@ -68,7 +68,7 @@ impl<'a, T: core::fmt::Display> DisplayOrReplacement<'a, T> {
 
 pub struct DebugDisplay<'a, T: core::fmt::Display + ?Sized>(pub &'a T);
 
-impl<'a, T: core::fmt::Display + ?Sized> core::fmt::Debug for DebugDisplay<'a, T> {
+impl<T: core::fmt::Display + ?Sized> core::fmt::Debug for DebugDisplay<'_, T> {
 	fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
 		write!(f, "{}", self.0)
 	}
