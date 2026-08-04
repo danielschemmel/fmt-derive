@@ -1,6 +1,6 @@
 [package]
 name = "fmt-derive"
-version = "0.1.2"
+version = "0.1.3"
 description = "A more robust and versatile derive macro for Debug and Display."
 readme = "README.md"
 authors = ["Daniel Schemmel <daniel@schemmel.net>"]
@@ -11,7 +11,7 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-fmt-derive-proc = { version = "=0.1.2", path = "../fmt-derive-proc" }
+fmt-derive-proc = { version = "=0.1.3", path = "../fmt-derive-proc" }
 
 [dev-dependencies]
 pretty_assertions = "1.3.0"
