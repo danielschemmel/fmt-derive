@@ -150,8 +150,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 				#display
 			}
 		}
-	)
-	.into();
+	);
 	// println!("{}", result);
 
 	emitter.into_result().map(|()| result)
