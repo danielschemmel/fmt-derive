@@ -1,24 +1,24 @@
-use proc_macro_error2::{abort_if_dirty, emit_error};
+use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-use syn::parse_macro_input;
 
 use crate::generics::GenericVariants;
 use crate::syntax::{field_attribute, item_attribute, variant_attribute};
 
-pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -> proc_macro::TokenStream {
-	let item = parse_macro_input!(item as syn::DeriveInput);
+pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream) -> manyhow::Result<TokenStream2> {
+	let item = syn::parse::<syn::DeriveInput>(item)?;
 	let item_name = &item.ident;
 
+	let mut emitter = manyhow::Emitter::new();
 	let mut item_config = item_attribute::ItemAttribute::default();
 	for attribute in &item.attrs {
 		if attribute.path().is_ident("fmt") || attribute.path().is_ident("display") {
 			match attribute.parse_args() {
 				Ok(value) => item_config.update(value),
-				Err(err) => emit_error!(attribute, err),
+				Err(err) => manyhow::emit!(emitter, attribute, "{}", err),
 			}
 		}
 	}
-	abort_if_dirty();
+	emitter.into_result()?;
 
 	let display = match item_config.format {
 		Some(format) => {
@@ -54,11 +54,11 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 				match item_struct.fields {
 					syn::Fields::Unit => process_unit(&item_name_str),
 					syn::Fields::Unnamed(fields) => {
-						let (destructure, implementation) = process_tuple(&item_name_str, &fields);
+						let (destructure, implementation) = process_tuple(&item_name_str, &fields, &mut emitter);
 						quote!(#[allow(unused_variables)] let #item_name #destructure = self; #implementation)
 					}
 					syn::Fields::Named(fields) => {
-						let (destructure, implementation) = process_struct(&item_name_str, &fields);
+						let (destructure, implementation) = process_struct(&item_name_str, &fields, &mut emitter);
 						quote!(#[allow(unused_variables)] let #item_name #destructure = self; #implementation)
 					}
 				}
@@ -80,7 +80,7 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 							if attribute.path().is_ident("fmt") || attribute.path().is_ident("display") {
 								match attribute.parse_args() {
 									Ok(value) => variant_config.update(value),
-									Err(err) => emit_error!(attribute, err),
+									Err(err) => manyhow::emit!(emitter, attribute, "{}", err),
 								}
 							}
 						}
@@ -121,11 +121,11 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 									stream.extend(quote!(Self::#variant_name => { #implementation }));
 								}
 								syn::Fields::Unnamed(fields) => {
-									let (destructure, implementation) = process_tuple(&variant_name_str, &fields);
+									let (destructure, implementation) = process_tuple(&variant_name_str, &fields, &mut emitter);
 									stream.extend(quote!(Self::#variant_name #destructure => { #implementation }));
 								}
 								syn::Fields::Named(fields) => {
-									let (destructure, implementation) = process_struct(&variant_name_str, &fields);
+									let (destructure, implementation) = process_struct(&variant_name_str, &fields, &mut emitter);
 									stream.extend(quote!(Self::#variant_name #destructure => { #implementation }));
 								}
 							}
@@ -154,15 +154,18 @@ pub fn display(item: proc_macro::TokenStream, use_rt: &proc_macro2::TokenStream)
 	.into();
 	// println!("{}", result);
 
-	abort_if_dirty();
-	result
+	emitter.into_result().map(|()| result)
 }
 
 fn process_unit(name: &str) -> proc_macro2::TokenStream {
 	quote!(fmt_derive_formatter_variable.debug_struct(#name).finish())
 }
 
-fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
+fn process_tuple(
+	name: &str,
+	fields: &syn::FieldsUnnamed,
+	emitter: &mut manyhow::Emitter,
+) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
 	let mut chain = quote!(use _rt::Replacement; let mut w = fmt_derive_formatter_variable.debug_tuple(#name););
 
@@ -172,7 +175,7 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 			if attribute.path().is_ident("fmt") || attribute.path().is_ident("display") {
 				match attribute.parse_args() {
 					Ok(value) => config.update(value),
-					Err(err) => emit_error!(attribute, err),
+					Err(err) => manyhow::emit!(emitter, attribute, "{}", err),
 				}
 			}
 		}
@@ -194,7 +197,11 @@ fn process_tuple(name: &str, fields: &syn::FieldsUnnamed) -> (proc_macro2::Token
 	(quote!((#destructure)), quote!(#chain w.finish()))
 }
 
-fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
+fn process_struct(
+	name: &str,
+	fields: &syn::FieldsNamed,
+	emitter: &mut manyhow::Emitter,
+) -> (proc_macro2::TokenStream, proc_macro2::TokenStream) {
 	let mut destructure = proc_macro2::TokenStream::new();
 	let mut chain = quote!(use _rt::Replacement; let mut w = fmt_derive_formatter_variable.debug_struct(#name););
 
@@ -204,7 +211,7 @@ fn process_struct(name: &str, fields: &syn::FieldsNamed) -> (proc_macro2::TokenS
 			if attribute.path().is_ident("fmt") || attribute.path().is_ident("display") {
 				match attribute.parse_args() {
 					Ok(value) => config.update(value),
-					Err(err) => emit_error!(attribute, err),
+					Err(err) => manyhow::emit!(emitter, attribute, "{}", err),
 				}
 			}
 		}
