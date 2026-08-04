@@ -4,11 +4,11 @@ version = "0.1.2"
 description = "A more robust and versatile derive macro for Debug and Display."
 readme = "README.md"
 authors = ["Daniel Schemmel <daniel@schemmel.net>"]
-repository = "https://github.com/danielschemmel/fmt-derive"
-license = "MIT OR Apache-2.0"
 
-edition = "2024"
-rust-version = "1.85.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [lib]
 proc-macro = true
