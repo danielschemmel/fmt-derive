@@ -5,6 +5,7 @@ set -u
 set -o pipefail
 
 cargo clippy -- -D warnings
+cargo deny check
 cargo +1.85.0 test
 cargo +1.85.0 test --all-features
 git diff --exit-code  # check if unstaged changes exist
